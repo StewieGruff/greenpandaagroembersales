@@ -1240,3 +1240,176 @@ details[open] .plus::after {
     font-size: 13px;
   }
 }
+
+/* Shipping note on packages */
+.ship-note {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: -20px 0 44px;
+  padding: 18px 22px;
+  background: #fff4dc;
+  border: 1.5px solid var(--gold);
+  border-radius: 14px;
+  max-width: 860px;
+}
+.ship-note p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.ship-note b {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.truck {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: var(--forest);
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+}
+.truck circle {
+  fill: var(--paper);
+}
+.pkg-price {
+  margin-bottom: 8px;
+}
+.pkg-ship {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: 0 0 22px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #fff4dc;
+  color: #8a5a00;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.pkg-featured .pkg-ship {
+  background: rgba(230, 179, 74, 0.18);
+  color: var(--gold);
+}
+
+/* Build your box, WhatsApp CTA */
+.build-cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.build-cta .section-head {
+  margin-bottom: 0;
+}
+.build-cta .btn-whatsapp {
+  margin-top: 30px;
+}
+.build-examples {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.build-examples ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.build-examples li {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Order: custom link + shipping choice */
+.sel-custom {
+  margin: 16px 0 0;
+  font-size: 14.5px;
+  color: rgba(251, 247, 239, 0.75);
+}
+.sel-custom a {
+  color: var(--gold);
+  font-weight: 600;
+}
+.ship-field {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.ship-field legend {
+  padding: 0;
+  margin-bottom: 7px;
+}
+.ship-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.ship-opt {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 13px 14px;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ship-opt input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ship-opt strong {
+  font-size: 15.5px;
+}
+.ship-opt span {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.ship-opt.on {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(14, 59, 44, 0.14);
+}
+.ship-opt:has(input:focus-visible) {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.field-error .ship-opt {
+  border-color: var(--red);
+}
+
+@media (max-width: 1000px) {
+  .build-cta {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+@media (max-width: 720px) {
+  .ship-note {
+    margin-top: -12px;
+    padding: 16px;
+  }
+  .ship-note p {
+    font-size: 15px;
+  }
+  .build-cta .btn-whatsapp {
+    width: 100%;
+  }
+  .ship-options {
+    gap: 8px;
+  }
+  .ship-opt {
+    padding: 12px 10px;
+  }
+}

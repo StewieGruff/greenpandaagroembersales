@@ -3,10 +3,10 @@
 Landing page for Nigerian foodstuff boxes shipped to the UK.
 
 ## Edit content
-Everything (packages, prices, item list, WhatsApp number, deadline, FAQs) is in `src/config.js`.
+Everything (packages, prices, shipping times, certificates, WhatsApp number, deadline, FAQs) is in `src/config.js`.
 
 ## Order flow
-1. Customer picks a package or builds a custom box.
+1. Customer picks a package and air or sea shipping. Custom boxes go straight to WhatsApp.
 2. Submits the order form (saved to Google Sheets, email sent to greenpandaagro@gmail.com).
 3. Taps "Confirm on WhatsApp", which opens a chat with the full order pre-typed.
 

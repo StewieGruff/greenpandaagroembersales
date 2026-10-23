@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CONTACT,
   ORDER_ENDPOINT,
   ORDER_DEADLINE,
   SHIPPING,
+  CERTIFICATES,
   PACKAGES,
-  CUSTOM_ITEMS,
-  CUSTOM_MINIMUM,
+  CUSTOM_EXAMPLES,
   FAQS,
 } from './config.js';
 
@@ -17,6 +17,10 @@ const deadlineText = () => {
   const d = new Date(ORDER_DEADLINE + 'T00:00:00');
   return `Order by ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} for Christmas delivery`;
 };
+
+const waLink = (text) => `https://wa.me/${CONTACT.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+const CUSTOM_WA_TEXT =
+  "Hello GreenPanda Agro, I'd like to build a custom Christmas box for delivery to the UK. Here's what I want:\n\n";
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -44,19 +48,11 @@ function useReveal() {
 
 export default function App() {
   useReveal();
-  const [selection, setSelection] = useState(null); // { type: 'package', id } | { type: 'custom' }
-  const [qty, setQty] = useState({});
+  const [selection, setSelection] = useState(null); // package id
   const [order, setOrder] = useState(null);
 
-  const customLines = CUSTOM_ITEMS.filter((i) => qty[i.id] > 0).map((i) => ({ ...i, qty: qty[i.id] }));
-  const customTotal = customLines.reduce((s, i) => s + i.price * i.qty, 0);
-
   const choosePackage = (id) => {
-    setSelection({ type: 'package', id });
-    scrollTo('order');
-  };
-  const useCustom = () => {
-    setSelection({ type: 'custom' });
+    setSelection(id);
     scrollTo('order');
   };
 
@@ -67,20 +63,13 @@ export default function App() {
         <Hero />
         <TrustStrip />
         <Packages selection={selection} onChoose={choosePackage} />
-        <BuildBox qty={qty} setQty={setQty} lines={customLines} total={customTotal} onUse={useCustom} />
+        <BuildBox />
         <HowItWorks />
-        <OrderSection
-          selection={selection}
-          setSelection={setSelection}
-          customLines={customLines}
-          customTotal={customTotal}
-          order={order}
-          setOrder={setOrder}
-        />
+        <OrderSection selection={selection} setSelection={setSelection} order={order} setOrder={setOrder} />
         <Faq />
       </main>
       <Footer />
-      {!order && <MobileBar total={customTotal} onUse={useCustom} />}
+      {!order && <MobileBar />}
     </>
   );
 }
@@ -133,7 +122,9 @@ function Hero() {
               Build your own box
             </button>
           </div>
-          <p className="hero-note">Packages from $250. Shipping quoted on WhatsApp before you pay.</p>
+          <p className="hero-note">
+            Packages from $250. Shipping is separate: air {SHIPPING.air} or sea {SHIPPING.sea}.
+          </p>
         </div>
 
         <div className="hero-visual" aria-hidden="true">
@@ -197,9 +188,9 @@ function Hero() {
 
 function TrustStrip() {
   const items = [
-    { t: 'CAC registered', d: 'A registered Nigerian agro company' },
-    { t: `Shipped by ${SHIPPING.partner}`, d: `Door delivery in ${SHIPPING.eta}` },
-    { t: 'Tracked delivery', d: 'Tracking number once your box ships' },
+    { t: `${CERTIFICATES.join(', ')} certified`, d: 'A registered Nigerian agro exporter' },
+    { t: 'Air or sea shipping', d: `Air ${SHIPPING.air}, sea ${SHIPPING.sea}` },
+    { t: 'Doorstep delivery', d: 'Delivered to your door anywhere in the UK' },
     { t: 'Packed for UK customs', d: 'Sealed, labelled, export ready' },
   ];
   return (
@@ -228,11 +219,19 @@ function Packages({ selection, onChoose }) {
           <h2>
             Pick a box, we <em>handle the rest.</em>
           </h2>
-          <p className="section-sub">Prices in US dollars. Shipping to the UK is quoted separately on WhatsApp.</p>
+          <p className="section-sub">Prices in US dollars, for the food box only.</p>
+        </div>
+        <div className="ship-note" data-reveal>
+          <TruckIcon />
+          <p>
+            <strong>Shipping is not included in the package price.</strong> It is charged separately, based on weight and
+            how you want it sent: <b>air, {SHIPPING.air}</b> or <b>sea, {SHIPPING.sea}</b>. We confirm the exact cost on
+            WhatsApp before you pay.
+          </p>
         </div>
         <div className="pkg-grid">
           {PACKAGES.map((p, idx) => {
-            const active = selection?.type === 'package' && selection.id === p.id;
+            const active = selection === p.id;
             return (
               <article
                 key={p.id}
@@ -243,10 +242,8 @@ function Packages({ selection, onChoose }) {
                 {p.featured && <span className="pkg-badge">Most popular</span>}
                 <h3>{p.name}</h3>
                 <p className="pkg-tag">{p.tagline}</p>
-                <p className="pkg-price">
-                  {money(p.price)}
-                  <small> + shipping</small>
-                </p>
+                <p className="pkg-price">{money(p.price)}</p>
+                <p className="pkg-ship">Shipping not included</p>
                 <ul className="pkg-items">
                   {p.items.map((it) => (
                     <li key={it}>
@@ -268,82 +265,31 @@ function Packages({ selection, onChoose }) {
   );
 }
 
-function BuildBox({ qty, setQty, lines, total, onUse }) {
-  const change = (id, d) => setQty((q) => ({ ...q, [id]: Math.max(0, Math.min(20, (q[id] || 0) + d)) }));
-  const remaining = Math.max(0, CUSTOM_MINIMUM - total);
-  const count = lines.reduce((s, l) => s + l.qty, 0);
-
+function BuildBox() {
   return (
     <section className="section build" id="build">
-      <div className="wrap">
+      <div className="wrap build-cta">
         <div className="section-head" data-reveal>
           <p className="kicker">Build Your Christmas Box</p>
           <h2>
             Only want <em>what you want?</em>
           </h2>
           <p className="section-sub">
-            Add the items you miss most. Minimum box value is {money(CUSTOM_MINIMUM)}.
+            Tell us what you miss most on WhatsApp. We'll put your box together and send you a quote, with shipping by
+            air or sea.
           </p>
+          <a className="btn btn-whatsapp btn-lg" href={waLink(CUSTOM_WA_TEXT)} target="_blank" rel="noopener noreferrer">
+            <WhatsAppIcon /> Build my box on WhatsApp
+          </a>
         </div>
-
-        <div className="build-layout">
-          <ul className="build-list">
-            {CUSTOM_ITEMS.map((i) => {
-              const n = qty[i.id] || 0;
-              return (
-                <li key={i.id} className={`build-row ${n ? 'has' : ''}`}>
-                  <div className="build-info">
-                    <strong>{i.name}</strong>
-                    <span>
-                      {i.unit} · {money(i.price)}
-                    </span>
-                  </div>
-                  <div className="stepper" role="group" aria-label={`Quantity of ${i.name}`}>
-                    <button onClick={() => change(i.id, -1)} disabled={!n} aria-label={`Remove one ${i.name}`}>
-                      −
-                    </button>
-                    <output aria-live="polite">{n}</output>
-                    <button onClick={() => change(i.id, 1)} aria-label={`Add one ${i.name}`}>
-                      +
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
+        <div className="build-examples" data-reveal>
+          <p className="kicker">Pick from items like</p>
+          <ul>
+            {CUSTOM_EXAMPLES.map((i) => (
+              <li key={i}>{i}</li>
+            ))}
           </ul>
-
-          <aside className="build-summary">
-            <p className="kicker">Your box</p>
-            {lines.length === 0 ? (
-              <p className="empty">Nothing in your box yet. Tap + to add items.</p>
-            ) : (
-              <ul className="sum-lines">
-                {lines.map((l) => (
-                  <li key={l.id}>
-                    <span>
-                      {l.qty} × {l.name}
-                    </span>
-                    <span>{money(l.price * l.qty)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="sum-total">
-              <span>
-                Subtotal <small>({count} {count === 1 ? 'item' : 'items'})</small>
-              </span>
-              <strong>{money(total)}</strong>
-            </div>
-            <div className="meter" aria-hidden="true">
-              <span style={{ width: `${Math.min(100, (total / CUSTOM_MINIMUM) * 100)}%` }} />
-            </div>
-            <p className="sum-note">
-              {remaining > 0 ? `Add ${money(remaining)} more to reach the minimum.` : 'Your box is ready. Shipping quoted on WhatsApp.'}
-            </p>
-            <button className="btn btn-gold btn-block" disabled={remaining > 0} onClick={onUse}>
-              Order this box
-            </button>
-          </aside>
+          <p className="fine">and more. Just ask.</p>
         </div>
       </div>
     </section>
@@ -352,10 +298,10 @@ function BuildBox({ qty, setQty, lines, total, onUse }) {
 
 function HowItWorks() {
   const steps = [
-    { t: 'Choose your box', d: 'Pick a package or build your own from our list.' },
-    { t: 'Submit your order', d: 'Tell us where to deliver in the UK. Takes a minute.' },
+    { t: 'Choose your box', d: 'Pick a package, or build your own with us on WhatsApp.' },
+    { t: 'Submit your order', d: 'Tell us where to deliver in the UK and how you want it shipped.' },
     { t: 'Confirm on WhatsApp', d: 'We confirm your order, shipping cost and payment details.' },
-    { t: 'Track it home', d: `Your box ships with ${SHIPPING.partner} and arrives in ${SHIPPING.eta}.` },
+    { t: 'Delivered to your door', d: `By air in ${SHIPPING.air}, or by sea in ${SHIPPING.sea}.` },
   ];
   return (
     <section className="section how">
@@ -380,41 +326,33 @@ function HowItWorks() {
   );
 }
 
-const emptyForm = { name: '', email: '', phone: '', address: '', city: '', postcode: '', notes: '' };
+const emptyForm = { name: '', email: '', phone: '', address: '', city: '', postcode: '', shipping: '', notes: '' };
+const SHIP_OPTIONS = [
+  { id: 'Air', label: 'Air', d: SHIPPING.air },
+  { id: 'Sea', label: 'Sea', d: SHIPPING.sea },
+  { id: 'Not sure', label: 'Not sure', d: 'Advise me' },
+];
 
-function OrderSection({ selection, setSelection, customLines, customTotal, order, setOrder }) {
+function OrderSection({ selection, setSelection, order, setOrder }) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const topRef = useRef(null);
 
-  const pkg = selection?.type === 'package' ? PACKAGES.find((p) => p.id === selection.id) : null;
-  const isCustom = selection?.type === 'custom';
-  const customValid = customTotal >= CUSTOM_MINIMUM;
-
-  const summary = useMemo(() => {
-    if (pkg) return { label: pkg.name, total: pkg.price, lines: [`${pkg.name} package (${money(pkg.price)})`] };
-    if (isCustom)
-      return {
-        label: 'Custom Christmas Box',
-        total: customTotal,
-        lines: customLines.map((l) => `${l.qty} × ${l.name}, ${l.unit} (${money(l.price * l.qty)})`),
-      };
-    return null;
-  }, [pkg, isCustom, customLines, customTotal]);
+  const pkg = PACKAGES.find((p) => p.id === selection) || null;
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const validate = () => {
     const e = {};
-    if (!summary) e.selection = 'Choose a package or build your box first.';
-    if (isCustom && !customValid) e.selection = `Your custom box needs to be at least ${money(CUSTOM_MINIMUM)}.`;
+    if (!pkg) e.selection = 'Choose a package first.';
     if (form.name.trim().length < 2) e.name = 'Enter your full name.';
     if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) e.email = 'Enter a valid email address.';
     if (form.phone.replace(/\D/g, '').length < 10) e.phone = 'Enter your WhatsApp number with country code.';
     if (form.address.trim().length < 5) e.address = 'Enter your street address.';
     if (form.city.trim().length < 2) e.city = 'Enter your town or city.';
     if (!/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i.test(form.postcode.trim())) e.postcode = 'Enter a valid UK postcode.';
+    if (!form.shipping) e.shipping = 'Choose air or sea shipping.';
     return e;
   };
 
@@ -432,9 +370,9 @@ function OrderSection({ selection, setSelection, customLines, customTotal, order
     const payload = {
       orderId: id,
       createdAt: new Date().toISOString(),
-      package: summary.label,
-      items: summary.lines.join('\n'),
-      subtotalUSD: summary.total,
+      package: pkg.name,
+      subtotalUSD: pkg.price,
+      shipping: form.shipping,
       name: form.name.trim(),
       email: form.email.trim(),
       whatsapp: form.phone.trim(),
@@ -457,7 +395,7 @@ function OrderSection({ selection, setSelection, customLines, customTotal, order
       }
     }
     if (typeof window.fbq === 'function') {
-      window.fbq('track', 'Lead', { value: summary.total, currency: 'USD', content_name: summary.label });
+      window.fbq('track', 'Lead', { value: pkg.price, currency: 'USD', content_name: pkg.name });
     }
     setSending(false);
     setOrder(payload);
@@ -480,45 +418,30 @@ function OrderSection({ selection, setSelection, customLines, customTotal, order
 
           <div className={`sel-card ${errors.selection ? 'sel-error' : ''}`}>
             <p className="sel-label">Your selection</p>
-            {summary ? (
+            {pkg ? (
               <>
                 <div className="sel-row">
-                  <strong>{summary.label}</strong>
-                  <strong>{money(summary.total)}</strong>
+                  <strong>{pkg.name}</strong>
+                  <strong>{money(pkg.price)}</strong>
                 </div>
-                {isCustom && (
-                  <ul className="sel-lines">
-                    {customLines.map((l) => (
-                      <li key={l.id}>
-                        {l.qty} × {l.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <p className="sel-ship">+ shipping to the UK, confirmed on WhatsApp</p>
+                <p className="sel-ship">Shipping not included. Confirmed on WhatsApp.</p>
               </>
             ) : (
               <p className="sel-empty">Nothing selected yet.</p>
             )}
             <div className="sel-switch">
               {PACKAGES.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className={pkg?.id === p.id ? 'on' : ''}
-                  onClick={() => setSelection({ type: 'package', id: p.id })}
-                >
+                <button key={p.id} type="button" className={pkg?.id === p.id ? 'on' : ''} onClick={() => setSelection(p.id)}>
                   {p.name}
                 </button>
               ))}
-              <button
-                type="button"
-                className={isCustom ? 'on' : ''}
-                onClick={() => (customLines.length ? setSelection({ type: 'custom' }) : scrollTo('build'))}
-              >
-                Custom box
-              </button>
             </div>
+            <p className="sel-custom">
+              Want a custom box?{' '}
+              <a href={waLink(CUSTOM_WA_TEXT)} target="_blank" rel="noopener noreferrer">
+                Build it on WhatsApp
+              </a>
+            </p>
             {errors.selection && <p className="err">{errors.selection}</p>}
           </div>
         </div>
@@ -546,6 +469,29 @@ function OrderSection({ selection, setSelection, customLines, customTotal, order
               <input value={form.postcode} onChange={set('postcode')} autoComplete="postal-code" />
             </Field>
           </div>
+          <fieldset className={`field ship-field ${errors.shipping ? 'field-error' : ''}`}>
+            <legend className="field-label">How should we ship it?</legend>
+            <div className="ship-options">
+              {SHIP_OPTIONS.map((o) => (
+                <label key={o.id} className={`ship-opt ${form.shipping === o.id ? 'on' : ''}`}>
+                  <input
+                    type="radio"
+                    name="shipping"
+                    value={o.id}
+                    checked={form.shipping === o.id}
+                    onChange={set('shipping')}
+                  />
+                  <strong>{o.label}</strong>
+                  <span>{o.d}</span>
+                </label>
+              ))}
+            </div>
+            {errors.shipping ? (
+              <span className="err">{errors.shipping}</span>
+            ) : (
+              <span className="hint">Shipping cost is separate and confirmed on WhatsApp.</span>
+            )}
+          </fieldset>
           <Field label="Anything we should know?" optional>
             <textarea rows="3" value={form.notes} onChange={set('notes')} />
           </Field>
@@ -576,9 +522,8 @@ function Success({ order, topRef }) {
     'Hello GreenPanda Agro, I just placed a December order.',
     '',
     `Order ID: ${order.orderId}`,
-    `Order: ${order.package}`,
-    order.items,
-    `Subtotal: ${money(order.subtotalUSD)} + shipping`,
+    `Package: ${order.package} (${money(order.subtotalUSD)})`,
+    `Shipping: ${order.shipping}`,
     '',
     `Name: ${order.name}`,
     `Delivery: ${order.address}, ${order.city}, ${order.postcode}`,
@@ -617,13 +562,13 @@ function Success({ order, topRef }) {
             <dd>{order.package}</dd>
           </div>
           <div>
-            <dt>Subtotal</dt>
-            <dd>{money(order.subtotalUSD)} + shipping</dd>
+            <dt>Package price</dt>
+            <dd>{money(order.subtotalUSD)}, shipping separate</dd>
           </div>
           <div>
-            <dt>Deliver to</dt>
+            <dt>Shipping</dt>
             <dd>
-              {order.city}, {order.postcode}
+              {order.shipping}, to {order.postcode}
             </dd>
           </div>
         </dl>
@@ -684,12 +629,13 @@ function Footer() {
           <div>
             <strong>Company</strong>
             <span>GreenPanda Agro, Nigeria</span>
-            <span>CAC {CONTACT.cac}</span>
+            <span>{CERTIFICATES.join(', ')} certified</span>
           </div>
           <div>
             <strong>Shipping</strong>
-            <span>UK delivery by {SHIPPING.partner}</span>
-            <span>Shipping quoted per order</span>
+            <span>Air: {SHIPPING.air}</span>
+            <span>Sea: {SHIPPING.sea}</span>
+            <span>Doorstep delivery across the UK</span>
           </div>
         </div>
       </div>
@@ -698,25 +644,11 @@ function Footer() {
   );
 }
 
-function MobileBar({ total, onUse }) {
-  if (total > 0) {
-    const ready = total >= CUSTOM_MINIMUM;
-    return (
-      <div className="mobile-bar">
-        <span>
-          Your box <strong>{money(total)}</strong>
-          {!ready && <small> · {money(CUSTOM_MINIMUM - total)} to minimum</small>}
-        </span>
-        <button className="btn btn-gold btn-sm" disabled={!ready} onClick={onUse}>
-          Order box
-        </button>
-      </div>
-    );
-  }
+function MobileBar() {
   return (
     <div className="mobile-bar">
       <span>
-        From <strong>$250</strong> + shipping
+        From <strong>$250</strong> <small>excl. shipping</small>
       </span>
       <button className="btn btn-gold btn-sm" onClick={() => scrollTo('packages')}>
         Order now
@@ -730,6 +662,16 @@ function Check({ small }) {
     <svg className={`check ${small ? 'check-sm' : ''}`} viewBox="0 0 20 20" aria-hidden="true">
       <circle cx="10" cy="10" r="10" />
       <path d="M5.5 10.5 L8.5 13.5 L14.5 7" />
+    </svg>
+  );
+}
+
+function TruckIcon() {
+  return (
+    <svg className="truck" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M2 6h11v9H2zM13 9h4l3 3.5V15h-7z" />
+      <circle cx="6" cy="17" r="1.8" />
+      <circle cx="16.5" cy="17" r="1.8" />
     </svg>
   );
 }

@@ -14,7 +14,7 @@ const NOTIFY_EMAIL = 'greenpandaagro@gmail.com';
 const SHEET_NAME = 'Orders';
 
 const HEADERS = [
-  'Order ID', 'Received', 'Package', 'Items', 'Subtotal (USD)',
+  'Order ID', 'Received', 'Package', 'Package price (USD)', 'Shipping',
   'Name', 'Email', 'WhatsApp', 'Address', 'City', 'Postcode', 'Notes', 'Status',
 ];
 
@@ -25,7 +25,7 @@ function doPost(e) {
     const o = JSON.parse(e.postData.contents);
     const sheet = getSheet_();
     sheet.appendRow([
-      o.orderId, new Date(), o.package, o.items, o.subtotalUSD,
+      o.orderId, new Date(), o.package, o.subtotalUSD, o.shipping,
       o.name, o.email, "'" + o.whatsapp, o.address, o.city, o.postcode, o.notes, 'New',
     ]);
 
@@ -33,9 +33,8 @@ function doPost(e) {
       'New December order from the landing page.',
       '',
       'Order ID: ' + o.orderId,
-      'Order: ' + o.package,
-      o.items,
-      'Subtotal: $' + o.subtotalUSD + ' + shipping',
+      'Package: ' + o.package + ' ($' + o.subtotalUSD + ')',
+      'Shipping: ' + o.shipping,
       '',
       'Name: ' + o.name,
       'Email: ' + o.email,

@@ -7,7 +7,6 @@ export const CONTACT = {
   whatsapp: '2347064444585', // international format, no + or spaces
   whatsappDisplay: '+234 706 444 4585',
   email: 'greenpandaagro@gmail.com',
-  cac: 'RC 0000000', // PLACEHOLDER: CAC registration number
 };
 
 // Google Apps Script web app URL (see apps-script/Code.gs).
@@ -19,10 +18,12 @@ export const ORDER_ENDPOINT = '';
 export const ORDER_DEADLINE = null;
 
 export const SHIPPING = {
-  partner: 'Chimert Logistics',
   country: 'United Kingdom',
-  eta: 'about 3 weeks', // PLACEHOLDER: confirm with Chimert
+  air: '7 to 10 days',
+  sea: '4 to 5 weeks',
 };
+
+export const CERTIFICATES = ['CAC', 'NEPC', 'SCUML'];
 
 export const CURRENCY = 'USD';
 
@@ -75,43 +76,49 @@ export const PACKAGES = [
   },
 ];
 
-// PLACEHOLDER: item list and unit prices for "Build Your Christmas Box".
-export const CUSTOM_ITEMS = [
-  { id: 'rice-lg', name: 'Parboiled long grain rice', unit: '5kg bag', price: 22 },
-  { id: 'rice-ofada', name: 'Ofada rice', unit: '2kg bag', price: 18 },
-  { id: 'beans-honey', name: 'Honey beans (oloyin)', unit: '2kg bag', price: 16 },
-  { id: 'beans-brown', name: 'Brown beans', unit: '2kg bag', price: 14 },
-  { id: 'garri-ijebu', name: 'Ijebu garri', unit: '2kg bag', price: 10 },
-  { id: 'garri-yellow', name: 'Yellow garri', unit: '2kg bag', price: 11 },
-  { id: 'elubo', name: 'Yam flour (elubo)', unit: '2kg bag', price: 15 },
-  { id: 'plantain-flour', name: 'Plantain flour', unit: '1kg bag', price: 12 },
-  { id: 'egusi', name: 'Ground egusi', unit: '1kg pack', price: 20 },
-  { id: 'ogbono', name: 'Ground ogbono', unit: '500g pack', price: 18 },
-  { id: 'cashew', name: 'Roasted cashew nuts', unit: '500g pack', price: 14 },
-  { id: 'spices', name: 'Spice pack (suya, pepper soup, dried pepper)', unit: 'set', price: 12 },
+// Shown as examples in the "Build Your Christmas Box" section. Custom boxes are arranged on WhatsApp.
+export const CUSTOM_EXAMPLES = [
+  'Parboiled rice',
+  'Ofada rice',
+  'Honey beans',
+  'Brown beans',
+  'Ijebu garri',
+  'Yellow garri',
+  'Yam flour (elubo)',
+  'Plantain flour',
+  'Ground egusi',
+  'Ground ogbono',
+  'Cashew nuts',
+  'Spices',
 ];
-
-export const CUSTOM_MINIMUM = 100; // minimum value of a custom box, in USD
 
 export const FAQS = [
   {
-    q: 'How much is shipping?',
-    a: 'Shipping is charged separately and depends on the weight of your order. We confirm the exact cost on WhatsApp before you pay, so there are no surprises.',
+    q: 'Is shipping included in the package price?',
+    a: 'No. The package price covers the food box only. Shipping is charged separately based on the weight of your order and whether you choose air or sea. We confirm the exact cost on WhatsApp before you pay.',
   },
   {
     q: 'How long does delivery take?',
-    a: `Delivery to the UK takes ${SHIPPING.eta} through our logistics partner, ${SHIPPING.partner}. You get a tracking number once your box ships.`,
+    a: `By air, ${SHIPPING.air}. By sea, ${SHIPPING.sea}. Sea is cheaper, air is faster. Pick what works for you when you order.`,
+  },
+  {
+    q: 'Do you deliver to my door?',
+    a: 'Yes. Doorstep delivery is available anywhere in the UK.',
   },
   {
     q: 'Will my box clear UK customs?',
-    a: 'Every item we offer is checked against UK import rules for food, and each box is packed, sealed and labelled for export. Items that are not permitted are simply not on our list.',
+    a: 'Every box is packed, sealed and labelled to meet UK food import rules. Items that are not permitted are simply not on our list.',
+  },
+  {
+    q: 'Can I choose my own items?',
+    a: 'Yes. Message us on WhatsApp with what you want and we will put a custom box together and send you a quote.',
+  },
+  {
+    q: 'Is GreenPanda Agro a registered company?',
+    a: 'Yes. We are registered with the CAC, NEPC (Nigerian Export Promotion Council) and SCUML.',
   },
   {
     q: 'How do I pay?',
     a: 'Submit your order here, then tap the WhatsApp button. Our team confirms your order, shipping cost and payment details in that chat.',
-  },
-  {
-    q: 'What if something goes wrong?',
-    a: 'Message us on WhatsApp or email us any time. Our team will work with you and our logistics partner to sort it out.',
   },
 ];
