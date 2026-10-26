@@ -1448,11 +1448,11 @@ details[open] .plus::after {
 
 /* Hero photo */
 .hero-visual {
-  width: min(470px, 100%);
+  width: min(540px, 100%);
 }
 .hero-photo {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   border-radius: 28px;
   overflow: hidden;
   background: #2a1a10;
@@ -1470,19 +1470,19 @@ details[open] .plus::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 48% 40%;
+  object-position: 45% 30%;
 }
 .hero-photo::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(14, 59, 44, 0.55));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 22%, transparent 80%, rgba(14, 59, 44, 0.35));
   pointer-events: none;
 }
 .photo-tag {
   position: absolute;
   left: 18px;
-  bottom: 18px;
+  top: 18px;
   z-index: 1;
   background: var(--paper);
   color: var(--ink);
@@ -1516,7 +1516,25 @@ details[open] .plus::after {
     top: -18px;
   }
   .hero-photo {
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 4 / 3;
     transform: none;
+  }
+  .hero-photo img {
+    object-position: 52% 25%;
+  }
+  .hero-visual .sticker {
+    width: 78px;
+    height: 78px;
+    font-size: 16px;
+    top: -14px;
+    right: -4px;
+  }
+  .photo-tag {
+    left: 12px;
+    top: 12px;
+    padding: 8px 12px;
+  }
+  .photo-tag strong {
+    font-size: 15px;
   }
 }

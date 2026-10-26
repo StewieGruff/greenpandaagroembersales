@@ -130,10 +130,12 @@ function Hero() {
         <div className="hero-visual">
           <div className="hero-photo">
             <img
-              src="https://images.unsplash.com/photo-1674762734613-071186dae644?w=1100&q=80&auto=format&fit=crop"
-              srcSet="https://images.unsplash.com/photo-1674762734613-071186dae644?w=700&q=80&auto=format&fit=crop 700w, https://images.unsplash.com/photo-1674762734613-071186dae644?w=1100&q=80&auto=format&fit=crop 1100w"
-              sizes="(max-width: 1000px) 92vw, 480px"
-              alt="A woman preparing a spread of food"
+              src="/hero.jpg"
+              srcSet="/hero-900.jpg 900w, /hero.jpg 1560w"
+              sizes="(max-width: 1000px) 92vw, 520px"
+              alt="A smiling woman in her kitchen behind a spread of jollof rice, fried plantain, chicken, stew and efo"
+              width="1560"
+              height="941"
               fetchpriority="high"
             />
             <div className="photo-tag">
@@ -614,7 +616,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="wrap footer-base">© {new Date().getFullYear()} GreenPanda Agro. All rights reserved. Hero photo by Peter Kalonji on Unsplash.</div>
+      <div className="wrap footer-base">© {new Date().getFullYear()} GreenPanda Agro. All rights reserved.</div>
     </footer>
   );
 }
