@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Hamper from './Hamper.jsx';
 import {
   CONTACT,
   ORDER_ENDPOINT,
@@ -128,54 +129,7 @@ function Hero() {
         </div>
 
         <div className="hero-visual" aria-hidden="true">
-          <div className="label-card">
-            <div className="label-top">
-              <span className="label-kicker">Export parcel</span>
-              <span className="label-stamp">UK</span>
-            </div>
-            <div className="label-route">
-              <div>
-                <small>From</small>
-                <strong>GreenPanda Agro</strong>
-                <span>Nigeria</span>
-              </div>
-              <svg viewBox="0 0 60 12" className="route-line">
-                <path d="M0 6 H52" />
-                <path d="M48 1 L56 6 L48 11" />
-              </svg>
-              <div>
-                <small>To</small>
-                <strong>Your door</strong>
-                <span>United Kingdom</span>
-              </div>
-            </div>
-            <ul className="label-list">
-              <li>
-                <span>Ofada rice</span>
-                <i>25kg</i>
-              </li>
-              <li>
-                <span>Groundnut oil</span>
-                <i>25L</i>
-              </li>
-              <li>
-                <span>Palm oil</span>
-                <i>25L</i>
-              </li>
-              <li>
-                <span>Semolina</span>
-                <i>25kg</i>
-              </li>
-              <li>
-                <span>Egusi</span>
-                <i>2 paints</i>
-              </li>
-            </ul>
-            <div className="label-foot">
-              <span>Packed &amp; sealed for export</span>
-              <span className="barcode" />
-            </div>
-          </div>
+          <Hamper />
           <div className="sticker">
             <span>Festive</span>
             <span>Feast</span>
