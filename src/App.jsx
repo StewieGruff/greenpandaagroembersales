@@ -111,8 +111,8 @@ function Hero() {
             for Christmas.
           </h1>
           <p className="lede">
-            Nigerian rice, beans, garri, flours and spices. Sourced and packed by GreenPanda Agro in Nigeria, shipped
-            straight to your door.
+            Ofada rice, garri, crayfish, palm oil, egusi and more. Sourced and packed by GreenPanda Agro in Nigeria,
+            shipped straight to your door.
           </p>
           <div className="hero-ctas">
             <button className="btn btn-gold" onClick={() => scrollTo('packages')}>
@@ -151,24 +151,24 @@ function Hero() {
             </div>
             <ul className="label-list">
               <li>
-                <span>Parboiled rice</span>
+                <span>Ofada rice</span>
                 <i>25kg</i>
               </li>
               <li>
-                <span>Honey beans</span>
-                <i>5kg</i>
+                <span>Groundnut oil</span>
+                <i>25L</i>
               </li>
               <li>
-                <span>Ijebu garri</span>
-                <i>5kg</i>
+                <span>Palm oil</span>
+                <i>25L</i>
               </li>
               <li>
-                <span>Ground egusi</span>
-                <i>2kg</i>
+                <span>Semolina</span>
+                <i>25kg</i>
               </li>
               <li>
-                <span>Pepper soup spice</span>
-                <i>1 set</i>
+                <span>Egusi</span>
+                <i>2 paints</i>
               </li>
             </ul>
             <div className="label-foot">
@@ -210,7 +210,10 @@ function TrustStrip() {
   );
 }
 
+const SHOW_ITEMS = 7;
+
 function Packages({ selection, onChoose }) {
+  const [open, setOpen] = useState({});
   return (
     <section className="section packages" id="packages">
       <div className="wrap">
@@ -244,13 +247,21 @@ function Packages({ selection, onChoose }) {
                 <p className="pkg-tag">{p.tagline}</p>
                 <p className="pkg-price">{money(p.price)}</p>
                 <p className="pkg-ship">Shipping not included</p>
+                <p className="pkg-count">{p.items.length} items</p>
                 <ul className="pkg-items">
-                  {p.items.map((it) => (
+                  {(open[p.id] ? p.items : p.items.slice(0, SHOW_ITEMS)).map((it) => (
                     <li key={it}>
                       <Check small />
                       {it}
                     </li>
                   ))}
+                  {p.items.length > SHOW_ITEMS && (
+                    <li className="pkg-more">
+                      <button type="button" onClick={() => setOpen((o) => ({ ...o, [p.id]: !o[p.id] }))}>
+                        {open[p.id] ? 'Show less' : `See all ${p.items.length} items`}
+                      </button>
+                    </li>
+                  )}
                 </ul>
                 <button className={`btn ${p.featured ? 'btn-gold' : 'btn-dark'} btn-block`} onClick={() => onChoose(p.id)}>
                   {active ? 'Selected' : `Choose ${p.name}`}
@@ -259,7 +270,6 @@ function Packages({ selection, onChoose }) {
             );
           })}
         </div>
-        <p className="fine">Package contents are being finalised with our suppliers and may change slightly.</p>
       </div>
     </section>
   );

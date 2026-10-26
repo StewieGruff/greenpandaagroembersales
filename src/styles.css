@@ -1413,3 +1413,35 @@ details[open] .plus::after {
     padding: 12px 10px;
   }
 }
+
+/* Package item count + expand */
+.pkg-count {
+  margin: -8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pkg-featured .pkg-count {
+  color: rgba(251, 247, 239, 0.6);
+}
+.pkg-count + .pkg-items {
+  margin-top: 14px;
+}
+.pkg-more button {
+  border: 0;
+  background: none;
+  padding: 4px 0 0 27px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--forest-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pkg-featured .pkg-more button {
+  color: var(--gold);
+}
+.pkg-grid {
+  align-items: start;
+}
