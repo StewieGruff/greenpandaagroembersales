@@ -15,6 +15,52 @@ const money = (n) => `$${n.toLocaleString('en-US')}`;
 const deadlineDate = () =>
   new Date(ORDER_DEADLINE + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
 
+const deadlineShort = () =>
+  new Date(ORDER_DEADLINE + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+// Calendar days left until the deadline, Lagos time. 0 means today is the last day, negative means closed.
+const daysLeft = () => {
+  if (!ORDER_DEADLINE) return null;
+  const lagosToday = new Date(Date.now() + 3600000).toISOString().slice(0, 10);
+  return Math.round((Date.parse(ORDER_DEADLINE) - Date.parse(lagosToday)) / 86400000);
+};
+
+const daysLeftText = () => {
+  const d = daysLeft();
+  if (d === null) return '';
+  if (d < 0) return 'Christmas orders are now closed';
+  if (d === 0) return 'Last day to order';
+  if (d === 1) return '1 day left';
+  return `${d} days left`;
+};
+
+function DeadlineBar() {
+  if (!ORDER_DEADLINE) return null;
+  const d = daysLeft();
+  return (
+    <div className="deadline-bar">
+      <div className="wrap">
+        {d < 0 ? (
+          <span>Christmas orders are now closed. Message us on WhatsApp for later deliveries.</span>
+        ) : (
+          <span>
+            <b>Christmas orders close {deadlineDate()}.</b> <em className="days">{daysLeftText()}</em>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DeadlinePill({ dark }) {
+  if (!ORDER_DEADLINE || daysLeft() < 0) return null;
+  return (
+    <p className={`deadline-pill ${dark ? 'on-dark' : ''}`}>
+      <ClockIcon /> Order by {deadlineDate()}, {daysLeftText().toLowerCase()}
+    </p>
+  );
+}
+
 const deadlineText = () => {
   if (!ORDER_DEADLINE) return 'Limited December shipping slots';
   const d = new Date(ORDER_DEADLINE + 'T00:00:00');
@@ -80,6 +126,7 @@ export default function App() {
 function Header() {
   return (
     <header className="site-header">
+      <DeadlineBar />
       <div className="wrap header-inner">
         <a href="#top" className="brand" aria-label="GreenPanda Agro home">
           <img src="/logo-white.png" alt="GreenPanda Agro" width="900" height="505" />
@@ -193,6 +240,7 @@ function Packages({ selection, onChoose }) {
             Pick a box, we <em>handle the rest.</em>
           </h2>
           <p className="section-sub">Prices in US dollars, for the food box only.</p>
+          <DeadlinePill />
         </div>
         <div className="ship-note" data-reveal>
           <TruckIcon />
@@ -255,7 +303,7 @@ function BuildBox() {
             Only want <em>what you want?</em>
           </h2>
           <p className="section-sub">
-            Tell us what you miss most on WhatsApp. We'll put your box together and send you a quote, with shipping by
+            Tell us what you miss most on WhatsApp before {deadlineDate()}. We'll put your box together and send you a quote, with shipping by
             air or sea.
           </p>
           <a className="btn btn-whatsapp btn-lg" href={waLink(CUSTOM_WA_TEXT)} target="_blank" rel="noopener noreferrer">
@@ -278,7 +326,7 @@ function BuildBox() {
 
 function HowItWorks() {
   const steps = [
-    { t: 'Choose your box', d: 'Pick a package, or build your own with us on WhatsApp.' },
+    { t: 'Choose your box', d: `Pick a package, or build your own with us on WhatsApp. Order by ${ORDER_DEADLINE ? deadlineDate() : 'the deadline'}.` },
     { t: 'Submit your order', d: 'Tell us where to deliver in the UK and how you want it shipped.' },
     { t: 'Confirm on WhatsApp', d: 'We confirm your order, shipping cost and payment details.' },
     { t: 'Delivered to your door', d: `By air in ${SHIPPING.air}, or by sea in ${SHIPPING.sea}.` },
@@ -617,6 +665,7 @@ function Footer() {
             <span>Air: {SHIPPING.air}</span>
             <span>Sea: {SHIPPING.sea}</span>
             <span>Doorstep delivery across the UK</span>
+            {ORDER_DEADLINE && <span>Last order date: {deadlineDate()}</span>}
           </div>
         </div>
       </div>
@@ -630,6 +679,7 @@ function MobileBar() {
     <div className="mobile-bar">
       <span>
         From <strong>$250</strong> <small>excl. shipping</small>
+        {ORDER_DEADLINE && daysLeft() >= 0 && <small className="mb-deadline">Order by {deadlineShort()}</small>}
       </span>
       <button className="btn btn-gold btn-sm" onClick={() => scrollTo('packages')}>
         Order now
@@ -653,6 +703,15 @@ function TruckIcon() {
       <path d="M2 6h11v9H2zM13 9h4l3 3.5V15h-7z" />
       <circle cx="6" cy="17" r="1.8" />
       <circle cx="16.5" cy="17" r="1.8" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
     </svg>
   );
 }

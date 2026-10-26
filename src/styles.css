@@ -26,7 +26,7 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 76px;
+  scroll-padding-top: 112px;
   -webkit-text-size-adjust: 100%;
 }
 body {
@@ -1539,3 +1539,58 @@ details[open] .plus::after {
   }
 }
 .deadline { color: var(--gold); font-weight: 600; }
+
+/* Deadline everywhere */
+.deadline-bar {
+  background: var(--gold);
+  color: var(--forest);
+  font-size: 14.5px;
+  text-align: center;
+  padding: 8px 0;
+}
+.deadline-bar b {
+  font-weight: 700;
+}
+.deadline-bar .days {
+  font-style: normal;
+  font-family: var(--display);
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: var(--forest);
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 13px;
+}
+.deadline-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: rgba(185, 51, 43, 0.1);
+  color: var(--red);
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.deadline-pill.on-dark {
+  background: rgba(230, 179, 74, 0.16);
+  color: var(--gold);
+}
+.mb-deadline {
+  display: block;
+  color: var(--gold) !important;
+  font-weight: 600;
+}
+@media (max-width: 720px) {
+  .deadline-bar {
+    font-size: 13px;
+    padding: 7px 0;
+  }
+  .deadline-bar .days {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+}
