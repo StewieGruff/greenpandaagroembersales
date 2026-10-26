@@ -1538,3 +1538,4 @@ details[open] .plus::after {
     font-size: 15px;
   }
 }
+.deadline { color: var(--gold); font-weight: 600; }

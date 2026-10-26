@@ -12,6 +12,9 @@ import {
 
 const money = (n) => `$${n.toLocaleString('en-US')}`;
 
+const deadlineDate = () =>
+  new Date(ORDER_DEADLINE + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+
 const deadlineText = () => {
   if (!ORDER_DEADLINE) return 'Limited December shipping slots';
   const d = new Date(ORDER_DEADLINE + 'T00:00:00');
@@ -391,6 +394,7 @@ function OrderSection({ selection, setSelection, order, setOrder }) {
           </h2>
           <p className="section-sub">
             Fill this in, then confirm on WhatsApp. You only pay after we confirm your order and shipping cost.
+            {ORDER_DEADLINE && <strong className="deadline"> Orders close {deadlineDate()}.</strong>}
           </p>
 
           <div className={`sel-card ${errors.selection ? 'sel-error' : ''}`}>
