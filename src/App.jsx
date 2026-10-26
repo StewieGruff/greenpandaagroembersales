@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { initPixel, track, trackWhenSeen } from './pixel.js';
 import {
   CONTACT,
   ORDER_ENDPOINT,
@@ -97,10 +98,16 @@ function useReveal() {
 
 export default function App() {
   useReveal();
+  useEffect(() => {
+    initPixel();
+    trackWhenSeen('#packages', 'ViewContent', { content_name: 'December packages' });
+  }, []);
   const [selection, setSelection] = useState(null); // package id
   const [order, setOrder] = useState(null);
 
   const choosePackage = (id) => {
+    const p = PACKAGES.find((x) => x.id === id);
+    if (p) track('InitiateCheckout', { value: p.price, currency: 'USD', content_name: p.name });
     setSelection(id);
     scrollTo('order');
   };
@@ -422,9 +429,17 @@ function OrderSection({ selection, setSelection, order, setOrder }) {
         // The WhatsApp step still carries the full order, so we never block the customer here.
       }
     }
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'Lead', { value: pkg.price, currency: 'USD', content_name: pkg.name });
-    }
+    track(
+      'Lead',
+      { value: pkg.price, currency: 'USD', content_name: pkg.name },
+      {
+        email: payload.email,
+        phone: payload.whatsapp,
+        firstName: payload.name.split(' ')[0],
+        city: payload.city,
+        postcode: payload.postcode,
+      }
+    );
     setSending(false);
     setOrder(payload);
     setTimeout(() => topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);

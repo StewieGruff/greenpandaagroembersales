@@ -11,6 +11,9 @@ export const CONTACT = {
 
 // Google Apps Script web app URL (see apps-script/Code.gs).
 // Leave empty to skip saving to Google Sheets.
+// Meta (Facebook) Pixel ID. Public value, safe to keep here.
+export const META_PIXEL_ID = '1096022216672824';
+
 export const ORDER_ENDPOINT = '';
 
 // Last order date for Christmas delivery. Set to null until confirmed.

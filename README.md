@@ -13,8 +13,10 @@ Everything (packages, prices, shipping times, certificates, WhatsApp number, dea
 ## Google Sheets + email
 Follow the steps at the top of `apps-script/Code.gs`, then paste the Web app URL into `ORDER_ENDPOINT` in `src/config.js`.
 
-## Meta Pixel
-Uncomment the pixel block in `index.html` and add the pixel ID. A `Lead` event fires on every order.
+## Meta Pixel and Conversions API
+The Pixel (ID in `src/config.js`) is live. Events: PageView, ViewContent (packages seen), InitiateCheckout (package chosen), Lead (order submitted, with value), Contact (any WhatsApp tap).
+
+The Conversions API function is at `api/meta-event.js`. It stays idle until you add `META_CAPI_TOKEN` in Vercel (Project > Settings > Environment Variables) and redeploy. Browser and server events share an event ID, so Meta counts each once.
 
 ## Run locally
 ```
