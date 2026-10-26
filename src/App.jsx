@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import Hamper from './Hamper.jsx';
 import {
   CONTACT,
   ORDER_ENDPOINT,
@@ -128,8 +127,20 @@ function Hero() {
           </p>
         </div>
 
-        <div className="hero-visual" aria-hidden="true">
-          <Hamper />
+        <div className="hero-visual">
+          <div className="hero-photo">
+            <img
+              src="https://images.unsplash.com/photo-1674762734613-071186dae644?w=1100&q=80&auto=format&fit=crop"
+              srcSet="https://images.unsplash.com/photo-1674762734613-071186dae644?w=700&q=80&auto=format&fit=crop 700w, https://images.unsplash.com/photo-1674762734613-071186dae644?w=1100&q=80&auto=format&fit=crop 1100w"
+              sizes="(max-width: 1000px) 92vw, 480px"
+              alt="A woman preparing a spread of food"
+              fetchpriority="high"
+            />
+            <div className="photo-tag">
+              <small>From Nigeria to</small>
+              <strong>Your door, UK</strong>
+            </div>
+          </div>
           <div className="sticker">
             <span>Festive</span>
             <span>Feast</span>
@@ -603,7 +614,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="wrap footer-base">© {new Date().getFullYear()} GreenPanda Agro. All rights reserved.</div>
+      <div className="wrap footer-base">© {new Date().getFullYear()} GreenPanda Agro. All rights reserved. Hero photo by Peter Kalonji on Unsplash.</div>
     </footer>
   );
 }
