@@ -20,7 +20,7 @@ function cookie(req, name) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const pixelId = process.env.META_PIXEL_ID || '1096022216672824';
+  const pixelId = process.env.META_PIXEL_ID || '1864628821556733';
   const token = process.env.META_CAPI_TOKEN;
   if (!pixelId || !token) return res.status(204).end(); // tracking not configured yet
 
