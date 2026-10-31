@@ -14,7 +14,7 @@ export const CONTACT = {
 // Meta (Facebook) Pixel ID. Public value, safe to keep here.
 export const META_PIXEL_ID = '1864628821556733';
 
-export const ORDER_ENDPOINT = '';
+export const ORDER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzDHc4LpVmb_XgL4Z7MrH-wHCAn3UtWZ93nANoAiTs0IHBcitk9-A8iJEVAW7YUPqI-Fg/exec';
 
 // Last order date for Christmas delivery. Set to null until confirmed.
 // Example: '2026-11-25'
