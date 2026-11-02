@@ -1594,3 +1594,108 @@ details[open] .plus::after {
     font-size: 12px;
   }
 }
+
+/* Post-submit WhatsApp confirm sheet (no page jump) */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 30, 22, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: sheet-fade 0.25s ease both;
+}
+.sheet {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  background: var(--forest);
+  color: var(--paper);
+  border-radius: 28px;
+  padding: 40px 32px 28px;
+  text-align: center;
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5);
+  animation: sheet-up 0.4s var(--ease) both;
+}
+.sheet .success-icon {
+  display: flex;
+  justify-content: center;
+}
+.sheet .success-icon .check {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+}
+.sheet .success-icon .check circle {
+  fill: var(--gold);
+}
+.sheet .success-icon .check path {
+  stroke: var(--forest);
+}
+.sheet .kicker {
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.sheet h2 {
+  font-size: clamp(30px, 6vw, 40px);
+}
+.sheet h2 em {
+  color: var(--gold);
+}
+.sheet-sub {
+  margin: 12px 0 22px;
+  color: rgba(251, 247, 239, 0.8);
+  font-size: 16px;
+}
+.sheet .receipt {
+  margin-top: 22px;
+}
+.sheet .fine {
+  color: rgba(251, 247, 239, 0.6);
+}
+.sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--paper);
+  font-size: 26px;
+  line-height: 1;
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}
+@media (max-width: 720px) {
+  .sheet-backdrop {
+    place-items: end stretch;
+    padding: 0;
+  }
+  .sheet {
+    width: 100%;
+    border-radius: 26px 26px 0 0;
+    padding: 34px 22px calc(22px + env(safe-area-inset-bottom));
+  }
+  .sheet .receipt {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-backdrop {
+    animation: none;
+  }
+}

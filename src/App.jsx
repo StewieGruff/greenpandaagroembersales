@@ -373,6 +373,7 @@ function OrderSection({ selection, setSelection, order, setOrder }) {
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const topRef = useRef(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const pkg = PACKAGES.find((p) => p.id === selection) || null;
 
@@ -442,10 +443,8 @@ function OrderSection({ selection, setSelection, order, setOrder }) {
     );
     setSending(false);
     setOrder(payload);
-    setTimeout(() => topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    setShowConfirm(true);
   };
-
-  if (order) return <Success order={order} topRef={topRef} />;
 
   return (
     <section className="section order" id="order" ref={topRef}>
@@ -539,12 +538,24 @@ function OrderSection({ selection, setSelection, order, setOrder }) {
           <Field label="Anything we should know?" optional>
             <textarea rows="3" value={form.notes} onChange={set('notes')} />
           </Field>
-          <button className="btn btn-gold btn-block btn-lg" disabled={sending}>
-            {sending ? 'Sending…' : 'Submit order'}
-          </button>
-          <p className="fine">No payment is taken on this page.</p>
+          {order ? (
+            <>
+              <a className="btn btn-whatsapp btn-block btn-lg" href={waOrderLink(order)} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon /> Confirm on WhatsApp
+              </a>
+              <p className="fine">Order {order.orderId} received. Tap above to confirm it with us on WhatsApp.</p>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-gold btn-block btn-lg" disabled={sending}>
+                {sending ? 'Sending…' : 'Submit order'}
+              </button>
+              <p className="fine">No payment is taken on this page.</p>
+            </>
+          )}
         </form>
       </div>
+      {order && showConfirm && <ConfirmSheet order={order} onClose={() => setShowConfirm(false)} />}
     </section>
   );
 }
@@ -561,7 +572,7 @@ function Field({ label, error, hint, optional, children }) {
   );
 }
 
-function Success({ order, topRef }) {
+function waOrderLink(order) {
   const text = [
     'Hello GreenPanda Agro, I just placed a December order.',
     '',
@@ -577,23 +588,38 @@ function Success({ order, topRef }) {
   ]
     .filter((l) => l !== null)
     .join('\n');
-  const href = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
+}
+
+function ConfirmSheet({ order, onClose }) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
 
   return (
-    <section className="section success" id="order" ref={topRef}>
-      <div className="wrap success-card">
+    <div className="sheet-backdrop" onClick={onClose} role="presentation">
+      <div className="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" onClick={(e) => e.stopPropagation()}>
+        <button className="sheet-close" type="button" onClick={onClose} aria-label="Close">
+          ×
+        </button>
         <div className="success-icon">
           <Check />
         </div>
         <p className="kicker">Order received</p>
-        <h2>
+        <h2 id="sheet-title">
           One last step, <em>{order.name.split(' ')[0]}.</em>
         </h2>
-        <p className="section-sub">
-          Tap the button to send your order to us on WhatsApp. We'll confirm your shipping cost and payment details
-          there.
+        <p className="sheet-sub">
+          Send your order to us on WhatsApp. We'll confirm your shipping cost and payment details there.
         </p>
-        <a className="btn btn-whatsapp btn-lg" href={href} target="_blank" rel="noopener noreferrer">
+        <a className="btn btn-whatsapp btn-lg btn-block" href={waOrderLink(order)} target="_blank" rel="noopener noreferrer">
           <WhatsAppIcon /> Confirm on WhatsApp
         </a>
         <dl className="receipt">
@@ -602,12 +628,10 @@ function Success({ order, topRef }) {
             <dd>{order.orderId}</dd>
           </div>
           <div>
-            <dt>Order</dt>
-            <dd>{order.package}</dd>
-          </div>
-          <div>
-            <dt>Package price</dt>
-            <dd>{money(order.subtotalUSD)}, shipping separate</dd>
+            <dt>Package</dt>
+            <dd>
+              {order.package}, {money(order.subtotalUSD)}
+            </dd>
           </div>
           <div>
             <dt>Shipping</dt>
@@ -615,12 +639,16 @@ function Success({ order, topRef }) {
               {order.shipping}, to {order.postcode}
             </dd>
           </div>
+          <div>
+            <dt>Shipping cost</dt>
+            <dd>Confirmed on WhatsApp</dd>
+          </div>
         </dl>
         <p className="fine">
-          WhatsApp not opening? Message us on {CONTACT.whatsappDisplay} or email {CONTACT.email} with your order ID.
+          WhatsApp not opening? Message {CONTACT.whatsappDisplay} or email {CONTACT.email} with your order ID.
         </p>
       </div>
-    </section>
+    </div>
   );
 }
 
