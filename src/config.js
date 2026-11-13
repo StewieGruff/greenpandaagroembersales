@@ -18,7 +18,7 @@ export const ORDER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzDHc4LpV
 
 // Last order date for Christmas delivery. Set to null until confirmed.
 // Example: '2026-11-25'
-export const ORDER_DEADLINE = '2026-11-10';
+export const ORDER_DEADLINE = null;
 
 export const SHIPPING = {
   country: 'United Kingdom',
@@ -123,10 +123,6 @@ export const CUSTOM_EXAMPLES = [
 ]
 
 export const FAQS = [
-  {
-    q: 'When is the last day to order?',
-    a: 'Orders close on 10 November so every box can reach the UK in time for Christmas.',
-  },
   {
     q: 'Is shipping included in the package price?',
     a: 'No. The package price covers the food box only. Shipping is charged separately based on the weight of your order and whether you choose air or sea. We confirm the exact cost on WhatsApp before you pay.',

@@ -310,7 +310,7 @@ function BuildBox() {
             Only want <em>what you want?</em>
           </h2>
           <p className="section-sub">
-            Tell us what you miss most on WhatsApp before {deadlineDate()}. We'll put your box together and send you a quote, with shipping by
+            Tell us what you miss most on WhatsApp{ORDER_DEADLINE ? ` before ${deadlineDate()}` : ''}. We'll put your box together and send you a quote, with shipping by
             air or sea.
           </p>
           <a className="btn btn-whatsapp btn-lg" href={waLink(CUSTOM_WA_TEXT)} target="_blank" rel="noopener noreferrer">
